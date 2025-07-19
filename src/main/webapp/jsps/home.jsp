@@ -9,8 +9,8 @@
 </head>
 </head>
 <body>
-<h1 align="center">Welcome to KKdevops kkfunda</h1>
-<h1 align="center"> KK FUNDA</h1>
+<h1 align="center">Welcome SJ Devops 2026</h1>
+<h1 align="center">MVVSNM</h1>
 <hr>
 <br>
 	<h1><h3> Server Side IP Address </h3><br>
