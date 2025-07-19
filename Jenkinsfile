@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('git checkout') {
             steps {
-                  git 'https://github.com/CBO4122/Maven-Web_Application-.git'
+                  git branch: 'development', url: 'https://github.com/CBO4122/Maven-Web_Application-.git'
             }
         }
         stage('Compile') {
