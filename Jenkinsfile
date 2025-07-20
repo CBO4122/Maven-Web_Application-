@@ -1,15 +1,18 @@
 pipeline {
     agent any
+
     tools {
         maven "maven_3.9.10"
     }
+
     triggers {
-           pollSCM('* * * * *')
-         }
+        pollSCM('* * * * *')  // Polls SCM every minute – adjust if needed
+    }
+
     stages {
         stage('Git Checkout') {
             steps {
-                git 'https://github.com/CBO4122/Maven-Web_Application-.git'
+                git url: 'https://github.com/CBO4122/Maven-Web_Application-.git'
             }
         }
 
@@ -21,7 +24,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn package'
             }
         }
 
@@ -33,7 +36,7 @@ pipeline {
 
         stage('Deploy to Nexus') {
             steps {
-                sh 'mvn clean deploy'
+                sh 'mvn deploy'
             }
         }
 
@@ -50,10 +53,14 @@ pipeline {
 
     post {
         success {
-            notifyBuild(currentBuild.result)
+            script {
+                notifyBuild('SUCCESS')
+            }
         }
         failure {
-            notifyBuild(currentBuild.result)
+            script {
+                notifyBuild('FAILURE')
+            }
         }
     }
 }
@@ -61,15 +68,15 @@ pipeline {
 def notifyBuild(String buildStatus = 'STARTED') {
     buildStatus = buildStatus ?: 'SUCCESS'
 
-    def colorCode = '#FF0000'
-    def summary = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
-
+    def colorCode = '#FF0000'  // Default RED for failure
     if (buildStatus == 'STARTED') {
-        colorCode = '#FFFF00'
+        colorCode = '#FFFF00'  // Yellow
     } else if (buildStatus == 'SUCCESS') {
-        colorCode = '#00FF00'
+        colorCode = '#00FF00'  // Green
     }
 
-    // Send Slack notification (make sure Slack is configured in Jenkins)
+    def summary = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+
+    // Slack send: Make sure slack plugin and credentials are configured
     slackSend(color: colorCode, message: summary, channel: '#cbo_devops')
 }
